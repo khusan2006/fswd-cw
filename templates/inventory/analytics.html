@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-slate-900">Manager Analytics</h1>
+    <p class="text-sm text-slate-500">High-level overview for managers only.</p>
+    </div>
+
+<div class="grid md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Total products</p>
+        <p class="text-3xl font-semibold text-slate-900">{{ total_products }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Total suppliers</p>
+        <p class="text-3xl font-semibold text-slate-900">{{ total_suppliers }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Total sales records</p>
+        <p class="text-3xl font-semibold text-slate-900">{{ total_sales }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Revenue (last 30 days)</p>
+        <p class="text-3xl font-semibold text-emerald-600">${{ revenue_last_30_days|floatformat:2|intcomma }}</p>
+    </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+    <section class="bg-white rounded-lg shadow p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-slate-800">Top products (30 days)</h2>
+        </div>
+        <ul class="divide-y divide-slate-100">
+            {% for item in top_products %}
+            <li class="py-3 flex justify-between items-center">
+                <div>
+                    <p class="font-medium text-slate-800">{{ item.product__name }}</p>
+                </div>
+                <span class="text-slate-600 font-semibold">{{ item.total_qty }} sold</span>
+            </li>
+            {% empty %}
+            <li class="py-3 text-sm text-slate-500">No sales in the last 30 days.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-slate-800">Sales by user (30 days)</h2>
+        </div>
+        <ul class="divide-y divide-slate-100">
+            {% for row in sales_by_user %}
+            <li class="py-3">
+                <p class="font-medium text-slate-800">{{ row.sold_by__username }}</p>
+                <p class="text-sm text-slate-500">
+                    {{ row.total_sales }} sales · ${{ row.total_revenue|floatformat:2|intcomma }}
+                </p>
+            </li>
+            {% empty %}
+            <li class="py-3 text-sm text-slate-500">No user sales data for the last 30 days.</li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+
+<div class="mt-6">
+    <p class="text-sm text-slate-500">
+        Low stock items: <span class="font-semibold text-amber-600">{{ low_stock_count }}</span>.
+        Use the <a href="{% url 'product-list' %}" class="text-slate-700 underline">Products</a> page to review and reorder.
+    </p>
+</div>
+{% endblock %}
+
+

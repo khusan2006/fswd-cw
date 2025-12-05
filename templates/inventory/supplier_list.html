@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Suppliers{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <div>
+        <h1 class="text-2xl font-semibold text-slate-800">Suppliers</h1>
+        <p class="text-sm text-slate-500">Track who keeps the shelves stocked.</p>
+    </div>
+    {% if user.is_manager %}
+    <a href="{% url 'supplier-create' %}" class="bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-700">Add supplier</a>
+    {% endif %}
+</div>
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left text-sm">
+        <thead class="bg-slate-100 text-xs uppercase text-slate-500">
+            <tr>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3">Contact</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Phone</th>
+                {% if user.is_manager %}
+                <th class="px-4 py-3 w-32">Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for supplier in suppliers %}
+            <tr>
+                <td class="px-4 py-3 font-medium text-slate-800">{{ supplier.name }}</td>
+                <td class="px-4 py-3">{{ supplier.contact_name|default:"-" }}</td>
+                <td class="px-4 py-3">{{ supplier.contact_email|default:"-" }}</td>
+                <td class="px-4 py-3">{{ supplier.contact_phone|default:"-" }}</td>
+                {% if user.is_manager %}
+                <td class="px-4 py-3 space-x-2">
+                    <a href="{% url 'supplier-edit' supplier.pk %}" class="text-slate-600 text-sm">Edit</a>
+                    <a href="{% url 'supplier-delete' supplier.pk %}" class="text-rose-600 text-sm">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-4 py-6 text-center text-slate-500">No suppliers yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+

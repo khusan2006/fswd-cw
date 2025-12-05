@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="grid md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Total products</p>
+        <p class="text-3xl font-semibold text-slate-900">{{ total_products }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Low stock</p>
+        <p class="text-3xl font-semibold text-amber-600">{{ low_stock_count }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-sm text-slate-500">Revenue (30 days)</p>
+        <p class="text-3xl font-semibold text-emerald-600">${{ revenue_last_30_days|floatformat:2|intcomma }}</p>
+    </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+    <section class="bg-white rounded-lg shadow p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-slate-800">Low stock alerts</h2>
+            <a href="{% url 'product-list' %}" class="text-sm text-slate-500 hover:text-slate-900">View all</a>
+        </div>
+        <ul class="divide-y divide-slate-100">
+            {% for product in low_stock_products %}
+            <li class="py-3 flex justify-between items-center">
+                <div>
+                    <p class="font-medium text-slate-800">{{ product.name }}</p>
+                    <p class="text-sm text-slate-500">SKU: {{ product.sku }}</p>
+                </div>
+                <span class="text-amber-600 font-semibold">{{ product.quantity }} left</span>
+            </li>
+            {% empty %}
+            <li class="py-3 text-sm text-slate-500">All products are above threshold.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-slate-800">Recent sales</h2>
+            <a href="{% url 'sale-list' %}" class="text-sm text-slate-500 hover:text-slate-900">View all</a>
+        </div>
+        <ul class="divide-y divide-slate-100">
+            {% for sale in recent_sales %}
+            <li class="py-3">
+                <p class="font-medium text-slate-800">{{ sale.product.name }}</p>
+                <p class="text-sm text-slate-500">
+                    {{ sale.quantity }} pcs · ${{ sale.unit_price }} · {{ sale.sold_by.get_short_name|default:sale.sold_by.username }}
+                </p>
+            </li>
+            {% empty %}
+            <li class="py-3 text-sm text-slate-500">No sales recorded yet.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'sale-create' %}" class="mt-4 inline-block bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-700">Record sale</a>
+    </section>
+</div>
+{% endblock %}
+
+

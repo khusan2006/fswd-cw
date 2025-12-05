@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Team{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <div>
+        <h1 class="text-2xl font-semibold text-slate-800">Team members</h1>
+        <p class="text-sm text-slate-500">Manage who can access the system.</p>
+    </div>
+    <a href="{% url 'user-create' %}" class="bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-700">Add user</a>
+</div>
+<div class="bg-white shadow rounded-lg overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3">Role</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 w-32">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-sm">
+            {% for user in users %}
+            <tr>
+                <td class="px-4 py-3">
+                    <div class="font-medium text-slate-800">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="text-slate-500 text-xs">@{{ user.username }}</div>
+                </td>
+                <td class="px-4 py-3">{{ user.email|default:"-" }}</td>
+                <td class="px-4 py-3 capitalize">{{ user.get_role_display }}</td>
+                <td class="px-4 py-3">
+                    {% if user.is_active %}
+                    <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">Active</span>
+                    {% else %}
+                    <span class="px-2 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 space-x-2">
+                    <a href="{% url 'user-edit' user.pk %}" class="text-slate-600 hover:text-slate-900 text-sm">Edit</a>
+                    {% if user != request.user %}
+                    <form action="{% url 'user-deactivate' user.pk %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button class="text-rose-600 text-sm">Disable</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-4 py-6 text-center text-slate-500">No users found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+

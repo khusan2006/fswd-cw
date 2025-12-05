@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <div>
+        <h1 class="text-2xl font-semibold text-slate-800">Sales</h1>
+        <p class="text-sm text-slate-500">Audit trail of every transaction.</p>
+    </div>
+    <a href="{% url 'sale-create' %}" class="bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-700">Record sale</a>
+</div>
+
+<form method="get" class="bg-white rounded-lg shadow p-4 mb-4 grid md:grid-cols-4 gap-4">
+    <select name="product" class="rounded border-slate-300">
+        <option value="">All products</option>
+        {% for product in products %}
+        <option value="{{ product.id }}" {% if filters.product == product.id|stringformat:"s" %}selected{% endif %}>{{ product.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="user" class="rounded border-slate-300">
+        <option value="">All users</option>
+        {% for member in users %}
+        <option value="{{ member.id }}" {% if filters.user == member.id|stringformat:"s" %}selected{% endif %}>
+            {{ member.get_short_name|default:member.username }}
+        </option>
+        {% endfor %}
+    </select>
+    <input type="date" name="start" value="{{ filters.start }}" class="rounded border-slate-300" />
+    <input type="date" name="end" value="{{ filters.end }}" class="rounded border-slate-300" />
+    <div class="md:col-span-4">
+        <button class="bg-slate-900 text-white px-4 py-2 rounded">Filter</button>
+    </div>
+</form>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-left text-sm">
+        <thead class="bg-slate-100 text-xs uppercase text-slate-500">
+            <tr>
+                <th class="px-4 py-3">Date</th>
+                <th class="px-4 py-3">Product</th>
+                <th class="px-4 py-3">Quantity</th>
+                <th class="px-4 py-3">Unit price</th>
+                <th class="px-4 py-3">Sold by</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for sale in sales %}
+            <tr>
+                <td class="px-4 py-3">{{ sale.created_at|date:"M d, Y H:i" }}</td>
+                <td class="px-4 py-3">{{ sale.product.name }}</td>
+                <td class="px-4 py-3 font-semibold">{{ sale.quantity }}</td>
+                <td class="px-4 py-3">${{ sale.unit_price }}</td>
+                <td class="px-4 py-3">{{ sale.sold_by.get_short_name|default:sale.sold_by.username }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-4 py-6 text-center text-slate-500">No sales found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

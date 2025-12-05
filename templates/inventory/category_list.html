@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <div>
+        <h1 class="text-2xl font-semibold text-slate-800">Categories</h1>
+        <p class="text-sm text-slate-500">Organize the catalog for faster filtering.</p>
+    </div>
+    <a href="{% url 'category-create' %}" class="bg-slate-900 text-white px-4 py-2 rounded hover:bg-slate-700">New category</a>
+</div>
+<div class="bg-white rounded-lg shadow divide-y divide-slate-100">
+    {% for category in categories %}
+    <div class="p-4 flex justify-between items-center">
+        <div>
+            <p class="font-medium text-slate-800">{{ category.name }}</p>
+            <p class="text-sm text-slate-500">{{ category.description|default:"No description" }}</p>
+        </div>
+        <div class="space-x-2">
+            <a href="{% url 'category-edit' category.pk %}" class="text-slate-600 text-sm">Edit</a>
+            <a href="{% url 'category-delete' category.pk %}" class="text-rose-600 text-sm">Delete</a>
+        </div>
+    </div>
+    {% empty %}
+    <p class="p-6 text-center text-slate-500">No categories defined yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
+
